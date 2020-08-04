@@ -31,6 +31,7 @@ class HLSManifest():
     audio_json = {}
     video_info_list = ""
     video_json = {}
+    video_sub_manifest_url = {}
 
     def __init__(self, asset_url):
         super(HLSManifest, self).__init__()
@@ -44,18 +45,29 @@ class HLSManifest():
         if manifest_text:
             self.manifest_text = manifest_text.text
 
-    def video_url(self):
-        """
-        Get video URL
-        """
-        print(self.manifest_text)
-
     def parse_manifest(self):
         """
         Parse Manifest to JSON
         """
         self.parse_audio()
         self.parse_video()
+
+    # Build submanifest URL ########################
+
+    def build_submanifest_url_for_video(self, base_url, profile_number):
+        """
+        Build the submanifest URL of the given asset
+        Parameters:
+            - base_url: is the CDN/Origin URL that will helps
+                to create the URL
+            - profile_number: video profile that will be retrieve
+        NOTE: self.manifest_text should not be empty
+        """
+        video_url = self.video_json[f"video_{profile_number}"]["URI"]
+        temp_va = f"{base_url}{video_url}"
+        self.video_sub_manifest_url[f"sub_manifest_{profile_number}"] = temp_va
+
+    # Build submanifest URL END ####################
 
     # Video parse section ##########################
 
@@ -145,11 +157,18 @@ if __name__ == "__main__":
     # HLS URL
     DOMAIN = "bitdash-a.akamaihd.net"
     FILE_NAME = "f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
-    SAMPLE_URL = f"https://{DOMAIN}/content/MI201109210084_1/m3u8s/{FILE_NAME}"
+    BASE_URL = f"https://{DOMAIN}/content/MI201109210084_1/m3u8s/"
+    SAMPLE_URL = f"{BASE_URL}{FILE_NAME}"
 
     # HLS Object creation
     hls_object = HLSManifest(SAMPLE_URL)
     hls_object.get_manifest_text()
     hls_object.parse_manifest()
 
-    print(json.dumps({"audio": hls_object.audio_json, "video": hls_object.video_json}))
+    # Submaniefst build
+    for profiles in range(5):
+        hls_object.build_submanifest_url_for_video(BASE_URL, profiles)
+    print(json.dumps({
+        "audio": hls_object.audio_json,
+        "video": hls_object.video_json,
+        "sub_manifest": hls_object.video_sub_manifest_url}))
