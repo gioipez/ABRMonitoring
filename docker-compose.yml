@@ -4,10 +4,10 @@ services:
   web:
     build: ./abrmonitoring
     image: abrparsermanifest:1
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn abrmonitoring.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./abrmonitoring/:/usr/src/app/
     ports:
       - 8000:8000
     env_file:
-      - ./abrmonitoring/.env.dev
+      - ./abrmonitoring/.env
