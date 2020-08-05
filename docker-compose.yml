@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  web:
+    build: ./abrmonitoring
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./abrmonitoring/:/usr/src/app/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./abrmonitoring/.env.dev

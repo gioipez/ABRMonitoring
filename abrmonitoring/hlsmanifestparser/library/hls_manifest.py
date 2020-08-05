@@ -6,7 +6,7 @@ audio chunks
 """
 import re
 import json
-import basic
+import hlsmanifestparser.library.basic as basic
 
 
 class HLSManifest():
@@ -241,3 +241,4 @@ class HLSManifest():
         self.asset_json["subtitles"] = subtitles_json
 
     # Subtitles parse section END ######################
+
