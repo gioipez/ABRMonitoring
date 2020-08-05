@@ -27,12 +27,12 @@ class HLSManifest():
     manifest_text = ""
     submanifests_url = ""
     submanifests_text = ""
-    audio_info_list = ""
-    audio_json = {}
+    subtitles_info_list = []
+    audio_info_list = []
     video_info_list = []
-    video_json = {}
-    sub_manifest_url = {}
-    video_files = {}
+    asset_json = {"audio": {}, "video": {}, "subtitles": {}}
+    sub_manifest_url = {"audio": {}, "video": {}, "subtitles": {}}
+    asset_files = {"audio": {}, "video": {}, "subtitles": {}}
 
     def __init__(self, asset_url):
         super(HLSManifest, self).__init__()
@@ -55,39 +55,39 @@ class HLSManifest():
         """
         self.parse_audio()
         self.parse_video()
+        self.parse_subtitles()
 
     # Build submanifest URL ########################
 
-    def build_submanifest_url(self, base_url, profile_number):
+    def build_submanifest_url(self, base_url, p_num, c_type="video"):
         """
         Build the submanifest URL of the given asset
         Parameters:
             - base_url: [str] is the CDN/Origin URL that will helps
                 to create the URL
-            - profile_number: [int] video profile that will be retrieve
+            - p_num: [int] video/audio/subtitle profile to be retrieve
         Output:
             - self.submanifest_url [dict] filled with submanifest urls
         NOTE: self.manifest_text should not be empty
         """
-        video_url = self.video_json[f"video_{profile_number}"]["URI"]
-        temp_va = f"{base_url}{video_url}"
-        self.sub_manifest_url[f"sub_manifest_{profile_number}"] = temp_va
+        submani_url = self.asset_json[f"{c_type}"][f"{c_type}_{p_num}"]["URI"]
+        temp_va = f"{base_url}{submani_url}"
+        self.sub_manifest_url[f"{c_type}"][f"sub_manifest_{p_num}"] = temp_va
 
-    def extract_video_files_from_submanifest(self, sub_manifest_url):
+    def extract_files_from_submanifest(self, sub_manifest_url, c_type="video"):
         """
-        Given the selected sub_manifest URL, it extract
+        Given the selected sub_manifest URL, it extract files
         Parameters:
             - sub_manifest_url [str] selected sub manifest url
         Output:
-            - self.video_files [dict] of all videos in the submanifest
+            - self.asset_files [dict] of all videos in the submanifest
         """
         submanifest_text = basic.get_request(sub_manifest_url)
-        video_chunk = 0
-        if submanifest_text:
-            for item in submanifest_text.text.split("\n"):
-                if "#EXT" not in item and item != "":
-                    self.video_files[f"{video_chunk}"] = item
-                    video_chunk += 1
+        counter = 0
+        for item in submanifest_text.text.split("\n"):
+            if "#EXT" not in item and item != "":
+                self.asset_files[f"{c_type}"][f"{counter}"] = item.replace("\r", "")
+                counter += 1
 
     # Build submanifest URL END ####################
 
@@ -124,7 +124,7 @@ class HLSManifest():
         """
         Parse information from list to json
         Output:
-            - self.video_json [dict] with all video information
+            - self.asset_json["video"] [dict] with all video information
         NOTE: self.video_info_list should have information
         """
         vid_num = 0
@@ -142,7 +142,7 @@ class HLSManifest():
             video_json[f"video_{vid_num}"]["URI"] = items[1].replace(
                 "\"", "").replace("\r", "")
             vid_num += 1
-        self.video_json = video_json
+        self.asset_json["video"] = video_json
 
     # Video parse section END ######################
 
@@ -176,23 +176,71 @@ class HLSManifest():
         """
         Parse information from list to json
         Output:
-            - self.audio_json [dict] with all audio information
+            - self.asset_json["audio"] [dict] with all audio information
         NOTE: self.audio_info_list should have information
         """
         audio_json = {}
-        au_t = []
         audio_num = 0
         for audio in self.audio_info_list:
             audio_json[f"audio_{audio_num}"] = {}
-            for au_parameter in audio.split(","):
-                au_t = au_parameter.split("=")
-                audio_json[f"audio_{audio_num}"][au_t[0]] = au_t[1].replace(
-                    "\"", ""
-                )
+            list_sub = list(filter(None, re.split(",([A-Z]*)=", audio)))
+            for item in enumerate(list_sub):
+                if item[1].isupper() and 'YES' not in item[1]:
+                    audio_json[f"audio_{audio_num}"][item[1]] = list_sub[item[0]+1].replace(
+                        "\"", ""
+                    ).replace("\r", "")
             audio_num += 1
-        self.audio_json = audio_json
+        self.asset_json["audio"] = audio_json
 
     # Audio parse section END ######################
+
+    # Subtitles parse section ##########################
+
+    def parse_subtitles(self):
+        """
+        Parse all subtitles info, calling methods:
+            - get_subtitles_information
+            - parse_subtitles_to_json
+        As a result this will handle all the information that manifest
+        have about subtitles
+        """
+        self.get_subtitles_information()
+        self.parse_subtitles_to_json()
+
+    def get_subtitles_information(self):
+        """
+        Get subtitles(s) URL from manifest as list
+        Output:
+            - self.subtitles_info_list [list] with all subtitles profile info
+        NOTE: self.manifest_text should have manifest information
+        """
+        subtitles_list = []
+        for items in self.manifest_text.split("\n"):
+            if "TYPE=SUBTITLES" in items:
+                subtitles_list.append(items)
+        self.subtitles_info_list = subtitles_list
+
+    def parse_subtitles_to_json(self):
+        """
+        Parse information from list to json
+        Output:
+            - self.asset_json["subtitles"] [dict] with all subtitles information
+        NOTE: self.subtitles_info_list should have information
+        """
+        subtitles_json = {}
+        sub_num = 0
+        for subtitles in self.subtitles_info_list:
+            subtitles_json[f"subtitles_{sub_num}"] = {}
+            list_sub = list(filter(None, re.split(",([A-Z]*)=", subtitles)))
+            for item in enumerate(list_sub):
+                if item[1].isupper() and 'YES' not in item[1]:
+                    subtitles_json[f"subtitles_{sub_num}"][item[1]] = list_sub[item[0]+1].replace(
+                        "\"", ""
+                    )
+            sub_num += 1
+        self.asset_json["subtitles"] = subtitles_json
+
+    # Subtitles parse section END ######################
 
 if __name__ == "__main__":
     # HLS URL
@@ -206,16 +254,30 @@ if __name__ == "__main__":
     hls_object.get_manifest_text()
     hls_object.parse_manifest()
 
-    # Submaniefst build
-    for profiles in range(5):
+    # Video Submaniefst build
+    for profiles in range(len(hls_object.video_info_list)):
         hls_object.build_submanifest_url(BASE_URL, profiles)
 
-    # Build video URL
-    hls_object.extract_video_files_from_submanifest(
-        hls_object.sub_manifest_url["sub_manifest_0"])
+    # Audio Submaniefst build
+    for profiles in range(len(hls_object.audio_info_list)):
+        hls_object.build_submanifest_url(BASE_URL, profiles, c_type="audio")
+
+    # Subtitles Submaniefst build
+    for profiles in range(len(hls_object.subtitles_info_list)):
+        hls_object.build_submanifest_url(BASE_URL, profiles, c_type="subtitles")
+
+    # Extra video from a submanifest_url
+    if 'sub_manifest_0' in hls_object.sub_manifest_url["video"].keys():
+        hls_object.extract_files_from_submanifest(
+            hls_object.sub_manifest_url["video"]["sub_manifest_0"])
+    if 'sub_manifest_0' in hls_object.sub_manifest_url["audio"].keys():
+        hls_object.extract_files_from_submanifest(
+            hls_object.sub_manifest_url["audio"]["sub_manifest_0"], c_type="audio")
+    if 'sub_manifest_0' in hls_object.sub_manifest_url["subtitles"].keys():
+        hls_object.extract_files_from_submanifest(
+            hls_object.sub_manifest_url["subtitles"]["sub_manifest_0"], c_type="subtitles")
 
     print(json.dumps({
-        "audio": hls_object.audio_json,
-        "video": hls_object.video_json,
-        "video_chunks": hls_object.video_files,
+        "subtitles": hls_object.asset_json,
+        "asset_chunks": hls_object.asset_files,
         "sub_manifest": hls_object.sub_manifest_url}))
