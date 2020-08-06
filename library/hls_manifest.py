@@ -6,6 +6,7 @@ audio chunks
 """
 import re
 import json
+import os
 import basic
 
 
@@ -41,13 +42,26 @@ class HLSManifest():
     def get_manifest_text(self):
         """
         Get manifest response base on given URL
+
         Output:
-            - self.manifest_text = [str] HLS manifest information
+        if works:
+         - self.manifest_text = [str] HLS manifest information
+         - tuple with ([200|304], True)
+        if work but did not reach the info:
+         - tuple with (HTTP_FAILING_STATUS, False)
+        if does not work:
+         - tuple with (None, False)
+
         NOTE: self.asset_url should not be empty
         """
         manifest_text = basic.get_request(self.asset_url)
         if manifest_text:
-            self.manifest_text = manifest_text.text
+            if manifest_text.status_code == 200 or manifest_text.status_code == 304:
+                self.manifest_text = manifest_text.text
+                return (manifest_text.status_code, True)
+            else:
+                return (manifest_text.status_code, False)
+        return (None, False)
 
     def parse_manifest(self):
         """
