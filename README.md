@@ -12,16 +12,16 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 sequenceDiagram
 UserMachine->>HLSParser:POSTrequestwithassetinformation
 HLSParser-->HLSParser:BuildgetrequesttogettheManifest
-HLSParser->>CDN/Origin:GETrequesttogetthemanifest
-CDN/Origin->>HLSParser:GETresponsewiththemanifest
+HLSParser->>Origin:GETrequesttogetthemanifest
+Origin->>HLSParser:GETresponsewiththemanifest
 HLSParser-->HLSParser:Parsetheinformationfrommanifest
 HLSParser-->HLSParser:BuildgetrequesttogetthesubManifestsURL
-HLSParser->>CDN/Origin:GETrequesttogetvideosubmanifest
-CDN/Origin->>HLSParser:GETresponsewithvideosubmanifes
-HLSParser->>CDN/Origin:GETrequesttogetaudiosubmanifest
-CDN/Origin->>HLSParser:GETresponsewithaudiosubmanifest
-HLSParser->>CDN/Origin:GETrequesttogetsubtitlessubmanifest
-CDN/Origin->>HLSParser:GETresponsewithsubtitlessubmanifest
+HLSParser->>Origin:GETrequesttogetvideosubmanifest
+Origin->>HLSParser:GETresponsewithvideosubmanifes
+HLSParser->>Origin:GETrequesttogetaudiosubmanifest
+Origin->>HLSParser:GETresponsewithaudiosubmanifest
+HLSParser->>Origin:GETrequesttogetsubtitlessubmanifest
+Origin->>HLSParser:GETresponsewithsubtitlessubmanifest
 HLSParser->>UserMachine:POSTresponsewithassetinformationinJSONformat
 ```
 
