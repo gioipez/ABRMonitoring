@@ -10,19 +10,8 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 
 ```
 sequenceDiagram
-UserMachine ->> HLSParser: POSTrequestwithassetinformation
-HLSParser --> HLSParser: BuildgetrequesttogettheManifest
-HLSParser ->> Origin: GETrequesttogetthemanifest
-Origin ->> HLSParser: GETresponsewiththemanifest
-HLSParser --> HLSParser: Parsetheinformationfrommanifest
-HLSParser --> HLSParser: BuildgetrequesttogetthesubManifestsURL
-HLSParser ->> Origin: GETrequesttogetvideosubmanifest
-Origin ->> HLSParser: GETresponsewithvideosubmanifes
-HLSParser ->> Origin: GETrequesttogetaudiosubmanifest
-Origin ->> HLSParser: GETresponsewithaudiosubmanifest
-HLSParser ->> Origin: GETrequesttogetsubtitlessubmanifest
-Origin ->> HLSParser: GETresponsewithsubtitlessubmanifest
-HLSParser ->> UserMachine: POSTresponsewithassetinformationinJSONformat
+    Alice->>John: Hello John, how are you?
+    John-->>Alice: Great!
 ```
 
 
