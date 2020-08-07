@@ -119,7 +119,7 @@ def get_request(url, **kwargs):
                 timeout=kwargs["timeout"],
             )
     except Exception as http_error:
-        print(f"Request error: {http_error}")
+        #print(f"Request error: {http_error}")
         return None
     else:
         return response

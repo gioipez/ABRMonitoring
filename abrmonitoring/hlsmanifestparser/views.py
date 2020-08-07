@@ -13,11 +13,11 @@ def hls_manifest_parser(request):
     serializer = HLSPManifestParserSerializer(data=request.data)
     if request.method == 'POST':
         if serializer.is_valid():
-            asset_url = serializer.data['url']
+            asset_name = serializer.data['asset_name']
             base_url = serializer.data['base_url']
 
             # HLS Object creation
-            hls_object = HLSManifest(asset_url)
+            hls_object = HLSManifest(f"{base_url}{asset_name}")
             hls_object.get_manifest_text()
             hls_object.parse_manifest()
 
