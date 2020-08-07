@@ -5,8 +5,6 @@ Build a class to get Manifest, submanifest, video and
 audio chunks
 """
 import re
-import json
-import os
 import basic
 
 
@@ -18,11 +16,18 @@ class HLSManifest():
         * manifest_text
         * submanifest_text_url
         * submanifest_text
+        * subtitles_info_list
+        * audio_info_list
+        * video_info_list
+        * asset_json
+        * sub_manifest_url
+        * asset_files
 
-    Parameters:
+    Init parameter(s):
         - asset_url
     Returns:
-        - HLSManifest object of the given URL
+        - HLSManifest object of the given URL and
+          the rest of the attibutes empty
     """
     asset_url = ""
     manifest_text = ""
@@ -47,8 +52,6 @@ class HLSManifest():
         if works:
          - self.manifest_text = [str] HLS manifest information
          - tuple with ([200|304], True)
-        if work but did not reach the info:
-         - tuple with (HTTP_FAILING_STATUS, False)
         if does not work:
          - tuple with (None, False)
 
@@ -59,8 +62,6 @@ class HLSManifest():
             if manifest_text.status_code == 200 or manifest_text.status_code == 304:
                 self.manifest_text = manifest_text.text
                 return (manifest_text.status_code, True)
-            else:
-                return (manifest_text.status_code, False)
         return (None, False)
 
     def parse_manifest(self):
@@ -84,9 +85,12 @@ class HLSManifest():
             - self.submanifest_url [dict] filled with submanifest urls
         NOTE: self.manifest_text should not be empty
         """
-        submani_url = self.asset_json[f"{c_type}"][f"{c_type}_{p_num}"]["URI"]
-        temp_va = f"{base_url}{submani_url}"
-        self.sub_manifest_url[f"{c_type}"][f"sub_manifest_{p_num}"] = temp_va
+        if f"{c_type}_{p_num}" in self.asset_json[f"{c_type}"].keys():
+            submani_url = self.asset_json[f"{c_type}"][f"{c_type}_{p_num}"]["URI"]
+            temp_va = f"{base_url}{submani_url}"
+            self.sub_manifest_url[f"{c_type}"][f"sub_manifest_{p_num}"] = temp_va
+            return True
+        return False
 
     def extract_files_from_submanifest(self, sub_manifest_url, c_type="video"):
         """
@@ -98,10 +102,13 @@ class HLSManifest():
         """
         submanifest_text = basic.get_request(sub_manifest_url)
         counter = 0
-        for item in submanifest_text.text.split("\n"):
-            if "#EXT" not in item and item != "":
-                self.asset_files[f"{c_type}"][f"{counter}"] = item.replace("\r", "")
-                counter += 1
+        if submanifest_text.text != "":
+            for item in submanifest_text.text.split("\n"):
+                if "#EXT" not in item and item != "":
+                    self.asset_files[f"{c_type}"][f"{counter}"] = item.replace("\r", "")
+                    counter += 1
+            return True
+        return False
 
     # Build submanifest URL END ####################
 
@@ -120,43 +127,55 @@ class HLSManifest():
 
     def get_video_information(self):
         """
-        Get video(s) URL from manifest as list
+        Get asset's video(s) paramaters from manifest as list
         Output:
             - self.video_info_list [list] with all video profile info
+            Return True
+
         NOTE: self.manifest_text should have manifest information
+        If self.manifest_text is empty, it returns False
         """
         video_profiles = []
-        for items in enumerate(self.manifest_text.split("\n")):
-            info = items[1]
-            if "RESOLUTION" in info and "#EXT-X-I-FRAME" not in info:
-                video_profiles.append((
-                    info,
-                    self.manifest_text.split("\n")[items[0] + 1]))
-        self.video_info_list = video_profiles
+        if self.manifest_text != "":
+            for items in enumerate(self.manifest_text.split("\n")):
+                info = items[1]
+                if "RESOLUTION" in info and "#EXT-X-I-FRAME" not in info:
+                    video_profiles.append((
+                        info,
+                        self.manifest_text.split("\n")[items[0] + 1]))
+            self.video_info_list = video_profiles
+            return True
+        return False
 
     def parse_video_to_json(self):
         """
         Parse information from list to json
         Output:
             - self.asset_json["video"] [dict] with all video information
+              returns True
+
         NOTE: self.video_info_list should have information
+        if self.video_info_list is empty, it returns False
         """
         vid_num = 0
         video_json = {}
-        for items in self.video_info_list:
-            video_json[f"video_{vid_num}"] = {}
-            separated_item = list(
-                filter(None, re.split(",([A-Z]*)=", items[0])))
-            for video_i in enumerate(separated_item):
-                if video_i[0] % 2 != 0:
-                    v_key = separated_item[video_i[0]]
-                    v_value = separated_item[video_i[0] + 1]
-                    video_json[f"video_{vid_num}"][v_key] = v_value.replace(
-                        "\"", "").replace("\r", "")
-            video_json[f"video_{vid_num}"]["URI"] = items[1].replace(
-                "\"", "").replace("\r", "")
-            vid_num += 1
-        self.asset_json["video"] = video_json
+        if len(self.video_info_list) > 0:
+            for items in self.video_info_list:
+                video_json[f"video_{vid_num}"] = {}
+                separated_item = list(
+                    filter(None, re.split(",([A-Z]*)=", items[0])))
+                for video_i in enumerate(separated_item):
+                    if video_i[0] % 2 != 0:
+                        v_key = separated_item[video_i[0]]
+                        v_value = separated_item[video_i[0] + 1]
+                        video_json[f"video_{vid_num}"][v_key] = v_value.replace(
+                            "\"", "").replace("\r", "")
+                video_json[f"video_{vid_num}"]["URI"] = items[1].replace(
+                    "\"", "").replace("\r", "")
+                vid_num += 1
+            self.asset_json["video"] = video_json
+            return True
+        return False
 
     # Video parse section END ######################
 
@@ -175,36 +194,48 @@ class HLSManifest():
 
     def get_audio_information(self):
         """
-        Get audio(s) URL from manifest as list
+        Get asset's audio(s) paramaters from manifest as list
         Output:
             - self.audio_info_list [list] with all audio profile info
+            Return True
+
         NOTE: self.manifest_text should have manifest information
+        If self.manifest_text is empty, it returns False
         """
         audio_list = []
-        for items in self.manifest_text.split("\n"):
-            if "TYPE=AUDIO" in items:
-                audio_list.append(items)
-        self.audio_info_list = audio_list
+        if self.manifest_text != "":
+            for items in self.manifest_text.split("\n"):
+                if "TYPE=AUDIO" in items:
+                    audio_list.append(items)
+            self.audio_info_list = audio_list
+            return True
+        return False
 
     def parse_audio_to_json(self):
         """
         Parse information from list to json
         Output:
             - self.asset_json["audio"] [dict] with all audio information
+            return True
+
         NOTE: self.audio_info_list should have information
+        if self.audio_info_list is empty, it returns False
         """
         audio_json = {}
         audio_num = 0
-        for audio in self.audio_info_list:
-            audio_json[f"audio_{audio_num}"] = {}
-            list_sub = list(filter(None, re.split(",([A-Z]*)=", audio)))
-            for item in enumerate(list_sub):
-                if item[1].isupper() and 'YES' not in item[1]:
-                    audio_json[f"audio_{audio_num}"][item[1]] = list_sub[item[0]+1].replace(
-                        "\"", ""
-                    ).replace("\r", "")
-            audio_num += 1
-        self.asset_json["audio"] = audio_json
+        if len(self.audio_info_list) > 0:
+            for audio in self.audio_info_list:
+                audio_json[f"audio_{audio_num}"] = {}
+                list_sub = list(filter(None, re.split(",([A-Z]*)=", audio)))
+                for item in enumerate(list_sub):
+                    if item[1].isupper() and 'YES' not in item[1]:
+                        audio_json[f"audio_{audio_num}"][item[1]] = list_sub[item[0]+1].replace(
+                            "\"", ""
+                        ).replace("\r", "")
+                audio_num += 1
+            self.asset_json["audio"] = audio_json
+            return True
+        return False
 
     # Audio parse section END ######################
 
@@ -223,16 +254,22 @@ class HLSManifest():
 
     def get_subtitles_information(self):
         """
-        Get subtitles(s) URL from manifest as list
+        Get asset's subtitle(s) paramaters from manifest as list
         Output:
-            - self.subtitles_info_list [list] with all subtitles profile info
+            - self.subtitle_info_list [list] with all subtitle profile info
+            Return True
+
         NOTE: self.manifest_text should have manifest information
+        If self.manifest_text is empty, it returns False
         """
         subtitles_list = []
-        for items in self.manifest_text.split("\n"):
-            if "TYPE=SUBTITLES" in items:
-                subtitles_list.append(items)
-        self.subtitles_info_list = subtitles_list
+        if self.manifest_text != "":
+            for items in self.manifest_text.split("\n"):
+                if "TYPE=SUBTITLES" in items:
+                    subtitles_list.append(items)
+            self.subtitles_info_list = subtitles_list
+            return True
+        return False
 
     def parse_subtitles_to_json(self):
         """
@@ -243,15 +280,18 @@ class HLSManifest():
         """
         subtitles_json = {}
         sub_num = 0
-        for subtitles in self.subtitles_info_list:
-            subtitles_json[f"subtitles_{sub_num}"] = {}
-            list_sub = list(filter(None, re.split(",([A-Z]*)=", subtitles)))
-            for item in enumerate(list_sub):
-                if item[1].isupper() and 'YES' not in item[1]:
-                    subtitles_json[f"subtitles_{sub_num}"][item[1]] = list_sub[item[0]+1].replace(
-                        "\"", ""
-                    )
-            sub_num += 1
-        self.asset_json["subtitles"] = subtitles_json
+        if len(self.subtitles_info_list) > 0: 
+            for subtitles in self.subtitles_info_list:
+                subtitles_json[f"subtitles_{sub_num}"] = {}
+                list_sub = list(filter(None, re.split(",([A-Z]*)=", subtitles)))
+                for item in enumerate(list_sub):
+                    if item[1].isupper() and 'YES' not in item[1]:
+                        subtitles_json[f"subtitles_{sub_num}"][item[1]] = list_sub[item[0]+1].replace(
+                            "\"", ""
+                        )
+                sub_num += 1
+            self.asset_json["subtitles"] = subtitles_json
+            return True
+        return False
 
     # Subtitles parse section END ######################
