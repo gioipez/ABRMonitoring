@@ -1,5 +1,6 @@
 # ABRMonitoring
 There are a tons of HLS, Smooth streaming and DASH library to parse the information from manifest to JSON data out there, the idea of this is give the engineer a tool to validate an HTTP Stream asset configuration, check the information that manifest is returning, all the submanifest, audio/video/subtitles chunks, codecs, etc. all of these in a microservice contenirized app responding with REST API.
+
 Then as you have all of that information, in a phase 2 of the project, the idea is to have another microservice that could use that information of the exposed server and use as input for monitoring
 
 ## Workflow
@@ -7,22 +8,23 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 ### HLS manifest parse
 
 
-```mermaid
-sequenceDiagram
-User_Machine->>HLS_Parser:POSTrequestwithassetinformation
-HLS_Parser-->HLS_Parser:BuildgetrequesttogettheManifest
-HLS_Parser->>CDN/Origin:GETrequesttogetthemanifest
-CDN/Origin->>HLS_Parser:GETresponsewiththemanifest
-HLS_Parser-->HLS_Parser:Parsetheinformationfrommanifest
-HLS_Parser-->HLS_Parser:BuildgetrequesttogetthesubManifestsURL
-HLS_Parser->>CDN/Origin:GETrequesttogetvideosubmanifest
-CDN/Origin->>HLS_Parser:GETresponsewithvideosubmanifes
-HLS_Parser->>CDN/Origin:GETrequesttogetaudiosubmanifest
-CDN/Origin->>HLS_Parser:GETresponsewithaudiosubmanifest
-HLS_Parser->>CDN/Origin:GETrequesttogetsubtitlessubmanifest
-CDN/Origin->>HLS_Parser:GETresponsewithsubtitlessubmanifest
-HLS_Parser->>User_Machine:POSTresponsewithassetinformationinJSONformat
 ```
+sequenceDiagram
+UserMachine->>HLSParser:POSTrequestwithassetinformation
+HLSParser-->HLSParser:BuildgetrequesttogettheManifest
+HLSParser->>CDN/Origin:GETrequesttogetthemanifest
+CDN/Origin->>HLSParser:GETresponsewiththemanifest
+HLSParser-->HLSParser:Parsetheinformationfrommanifest
+HLSParser-->HLSParser:BuildgetrequesttogetthesubManifestsURL
+HLSParser->>CDN/Origin:GETrequesttogetvideosubmanifest
+CDN/Origin->>HLSParser:GETresponsewithvideosubmanifes
+HLSParser->>CDN/Origin:GETrequesttogetaudiosubmanifest
+CDN/Origin->>HLSParser:GETresponsewithaudiosubmanifest
+HLSParser->>CDN/Origin:GETrequesttogetsubtitlessubmanifest
+CDN/Origin->>HLSParser:GETresponsewithsubtitlessubmanifest
+HLSParser->>UserMachine:POSTresponsewithassetinformationinJSONformat
+```
+
 
 # Getting started 
 The instructions to install the app in docker are comming here.
