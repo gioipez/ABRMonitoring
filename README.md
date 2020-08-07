@@ -10,7 +10,6 @@
 ### HLS manifest parse
 
 
-```
 sequenceDiagram
 	participant User_Machine
 	participant HLS_Parser
@@ -29,7 +28,6 @@ sequenceDiagram
 	CDN/Origin->>HLS_Parser:GETresponsewithsubtitlessubmanifest
 	HLS_Parser->>User_Machine:POSTresponsewithassetinformationinJSONformat
 	Note right of HLS_Parser: This is phase 1 of the<br> project, the idea <br> is to add more feature.
-```
 
 
 # Sumary
