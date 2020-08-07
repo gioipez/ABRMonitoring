@@ -7,7 +7,9 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 
 ### HLS manifest parse
 
+![ABRManifestDiagram](pictures/ABRManifest.svg)
 
+Diagram designed with: [Sequence Diagram](https://sequencediagram.org/)
 
 # Getting started 
 The instructions to install the app in docker are comming here.
