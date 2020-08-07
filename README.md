@@ -11,20 +11,20 @@
 
 ```mermaid
 sequenceDiagram
-User Machine ->> HLS Parser: POST request with asset information
-HLS Parser --> HLS Parser: Build get request to get the Manifest
-HLS Parser ->> CDN/Origin: GET request to get the manifest
-CDN/Origin ->> HLS Parser: GET response with the manifest
-HLS Parser --> HLS Parser: Parse the information from manifest
-HLS Parser --> HLS Parser: Build get request to get the sub Manifests URL
-HLS Parser ->> CDN/Origin: GET request to get video submanifest
-CDN/Origin ->> HLS Parser: GET response with video submanifes
-HLS Parser ->> CDN/Origin: GET request to get audio submanifest
-CDN/Origin ->> HLS Parser: GET response with audio submanifest
-HLS Parser ->> CDN/Origin: GET request to get subtitles submanifest
-CDN/Origin ->> HLS Parser: GET response with subtitles submanifest
-HLS Parser ->> User Machine: POST response with asset information in JSON format
-Note right of HLS Parser: This is phase 1 of the<br> project, the idea <br> is to add more feature.
+User_Machine ->> HLS_Parser: POST request with asset information
+HLS_Parser --> HLS_Parser: Build get request to get the Manifest
+HLS_Parser ->> CDN/Origin: GET request to get the manifest
+CDN/Origin ->> HLS_Parser: GET response with the manifest
+HLS_Parser --> HLS_Parser: Parse the information from manifest
+HLS_Parser --> HLS_Parser: Build get request to get the sub Manifests URL
+HLS_Parser ->> CDN/Origin: GET request to get video submanifest
+CDN/Origin ->> HLS_Parser: GET response with video submanifes
+HLS_Parser ->> CDN/Origin: GET request to get audio submanifest
+CDN/Origin ->> HLS_Parser: GET response with audio submanifest
+HLS_Parser ->> CDN/Origin: GET request to get subtitles submanifest
+CDN/Origin ->> HLS_Parser: GET response with subtitles submanifest
+HLS_Parser ->> User_Machine: POST response with asset information in JSON format
+Note right of HLS_Parser: This is phase 1 of the<br> project, the idea <br> is to add more feature.
 ```
 
 
