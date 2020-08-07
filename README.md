@@ -8,12 +8,6 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 ### HLS manifest parse
 
 
-```
-sequenceDiagram
-    Alice->>John: Hello John, how are you?
-    John-->>Alice: Great!
-```
-
 
 # Getting started 
 The instructions to install the app in docker are comming here.
