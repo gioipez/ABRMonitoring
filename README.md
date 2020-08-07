@@ -10,7 +10,7 @@
 ### HLS manifest parse
 
 
-```mermaid
+```
 sequenceDiagram
 	participant User_Machine
 	participant HLS_Parser
