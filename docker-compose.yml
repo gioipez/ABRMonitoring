@@ -8,6 +8,6 @@ services:
     volumes:
       - ./abrmonitoring/:/usr/src/app/
     ports:
-      - 8000:8000
+      - 8001:8000
     env_file:
       - ./abrmonitoring/.env

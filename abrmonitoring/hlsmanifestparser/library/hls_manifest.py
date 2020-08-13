@@ -43,6 +43,21 @@ class HLSManifest():
     def __init__(self, asset_url):
         super(HLSManifest, self).__init__()
         self.asset_url = asset_url
+        self.clear_variables()
+
+    def clear_variables(self):
+        """
+        Clear variables for new request
+        """
+        self.manifest_text = ""
+        self.submanifests_url = ""
+        self.submanifests_text = ""
+        self.subtitles_info_list = []
+        self.audio_info_list = []
+        self.video_info_list = []
+        self.asset_json = {"audio": {}, "video": {}, "subtitles": {}}
+        self.sub_manifest_url = {"audio": {}, "video": {}, "subtitles": {}}
+        self.asset_files = {"audio": {}, "video": {}, "subtitles": {}}
 
     def get_manifest_text(self):
         """
