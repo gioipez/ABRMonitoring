@@ -47,7 +47,6 @@ def put_request(url, **kwargs):
     else:
         return response
 
-
 def post_request(url, **kwargs):
     '''
     Generic POST method with basic auth
@@ -86,7 +85,6 @@ def post_request(url, **kwargs):
     else:
         return response
 
-
 def get_request(url, **kwargs):
     '''
     Input:
@@ -114,6 +112,43 @@ def get_request(url, **kwargs):
             )
         else:
             response = requests.get(
+                url,
+                headers=kwargs["headers"],
+                timeout=kwargs["timeout"],
+            )
+    except Exception as http_error:
+        #print(f"Request error: {http_error}")
+        return None
+    else:
+        return response
+
+def head_request(url, **kwargs):
+    '''
+    Input:
+    - url
+    - kwargs:
+            - user
+            - password
+            - body
+            - headers
+            - timeout
+    '''
+    if "timeout" not in kwargs.keys():
+        kwargs["timeout"] = 5
+    if "headers" not in kwargs.keys():
+        kwargs["headers"] = {"Content-Type": "application/json"}
+    try:
+        if "user" in kwargs.keys():
+            response = requests.head(
+                url,
+                headers=kwargs["headers"],
+                timeout=kwargs["timeout"],
+                auth=HTTPBasicAuth(
+                    kwargs["user"],
+                    kwargs["password"]),
+            )
+        else:
+            response = requests.head(
                 url,
                 headers=kwargs["headers"],
                 timeout=kwargs["timeout"],
