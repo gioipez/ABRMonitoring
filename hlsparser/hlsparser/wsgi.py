@@ -1,5 +1,5 @@
 """
-WSGI config for abrmonitoring project.
+WSGI config for hlsparser project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abrmonitoring.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hlsparser.settings')
 
 application = get_wsgi_application()
