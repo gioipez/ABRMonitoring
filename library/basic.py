@@ -4,9 +4,18 @@ Mail: giovannt_92@hotmail.com / gioipez92@gmail.com
 Maintain an standar libraries for HTTP communication with
 try, timeouts and headers
 """
+import yaml
 import requests
 from requests.auth import HTTPBasicAuth
 
+
+def load_streamnames_from_file(path):
+    '''
+    Load YAML files to python
+    '''
+    streamnames_list = []
+    streamnames_list = yaml.load(open(path), Loader=yaml.FullLoader)
+    return streamnames_list
 
 def put_request(url, **kwargs):
     '''
