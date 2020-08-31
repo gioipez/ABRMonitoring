@@ -32,7 +32,7 @@ The solution was build with an software architecture patern Microservice Deploym
 
 - HTTP Method: POST
 - HTTP Headers: Content-Type:application/json
-- URL: in my case: [http://localhost:8000/hlsmanifest/](http://localhost:8000/hlsmanifest/) but that depends where you deployed it
+- URL: in my case: [http://localhost:8001/hlsmanifest/](http://localhost:8000/hlsmanifest/) but that depends where you deployed it
 - Body: {"asset_name":"name_of_the_asset.m3u8", "base_url":"http://cdn_fqn:port/path/"}
 
 ```sh
