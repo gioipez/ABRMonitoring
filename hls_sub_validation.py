@@ -3,6 +3,7 @@
 https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8
 '''
 import re
+import sys
 import json
 import requests
 import threading
@@ -54,7 +55,8 @@ if __name__ == "__main__":
     startTime = datetime.now()
 
     # Define Asset variables
-    MANIFEST = 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
+    # MANIFEST = 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
+    MANIFEST = input("Enter the URL (ex: https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8):\n")
     base_url, asset_name = get_base_url_and_asset_name(MANIFEST)
 
     # Server request
