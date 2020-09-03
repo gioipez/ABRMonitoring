@@ -1,7 +1,7 @@
 # ABRMonitoring
-There are a tons of HLS, Smooth streaming and DASH library to parse the information from manifest to JSON data out there, the idea of this is give the engineer a tool to validate an HTTP Stream asset configuration, check the information that manifest is returning, all the submanifest, audio/video/subtitles chunks, codecs, etc. all of these in a microservice contenirized app responding with REST API.
+There are a tons of HLS, Smooth streaming and DASH library to parse the information from manifest to JSON data out there, the idea of this is give the engineer a tool to validate an HTTP Stream asset configuration, check the information that manifest is returning, all the submanifest, audio/video/subtitles chunks, codecs, etc. all of these in a microservice contenirized app responding with REST API, with services able to groth completetly loseless.
 
-Then as you have all of that information, in a phase 2 of the project, the idea is to have another microservice that could use that information of the exposed server and use as input for monitoring
+Then as you have all of that information, in a phase 2 of the project, the idea is to have another microservice that could use that information of the exposed server and use as input for monitoring, create and elasticsearch cluster and upload it there to give you historical information.
 
 ## Workflow
 
@@ -32,17 +32,17 @@ The solution was build with an software architecture patern Microservice Deploym
 
 - HTTP Method: POST
 - HTTP Headers: Content-Type:application/json
-- URL: in my case: [http://localhost:8001/hlsmanifest/](http://localhost:8000/hlsmanifest/) but that depends where you deployed it
+- URL: in my case: [http://localhost:8001/hlsmanifest/](http://localhost:8001/hlsmanifest/) but that depends where you deployed it
 - Body: {"asset_name":"name_of_the_asset.m3u8", "base_url":"http://cdn_fqn:port/path/"}
 
 ```sh
-curl -XPOST -H'Content-type:application/json' 'http://localhost:8000/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}'
+curl -XPOST -H'Content-type:application/json' 'http://localhost:8001/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}'
 ```
 
 to print pretty formated, add ` | python -m json.tool` at the end of your request, like this:
 
 ```sh
-curl -XPOST -H'Content-type:application/json' 'http://localhost:8000/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}' | python -m json.tool
+curl -XPOST -H'Content-type:application/json' 'http://localhost:8001/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}' | python -m json.tool
 ```
 
 <details>
@@ -1232,6 +1232,21 @@ curl -XPOST -H'Content-type:application/json' 'http://localhost:8000/hlsmanifest
 }
 ```
 </details>
+
+## Another cool feature added
+
+Perrequisites: Docker hls container should be running
+
+Some of the commons problems during HLS implementation and even in the day to day work are the subtitles, you need to be sure that you have it on your asset or channel, there is a new feature included in the script `hls_sub_validation.py` that let you execute and ask about an URL to check its subtitles, for example:
+
+```
+(Monitoring) Mac: monitoring $python hls_sub_validation.py
+Enter the URL (ex: https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8):
+
+```
+
+It ask you to enter a valid Manifest URL for an asset with subtitles, then it print all the sub that are founf in the movie, at this moment this was tested with WEBVTT Sub.
+
 
 That's all, you have all the information parser from your HLS asset
 
