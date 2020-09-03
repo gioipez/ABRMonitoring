@@ -2,6 +2,7 @@
 # curl -XPOST -H'Content-type:application/json' 'http://localhost:8001/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}' | python -m json.tool
 https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8
 '''
+import re
 import json
 import requests
 import threading
@@ -37,27 +38,43 @@ def iterated_requested_manifest(url, subtitles):
         print(sub_response.text)
 
 
-def print_url(respinse, streamname):
-    if response.status_code == 200:
-        subtitles = response.json()["asset_chunks"]["subtitles"]
-        subtitles = list(subtitles.values())
-        sub_temp = f"https://bitdash-a.akamaihd.net/content/sintel/hls/"
-        recursion_requested_manifest(sub_temp, subtitles)
-        # iterated_requested_manifest(sub_temp, subtitles)
+def print_url(response, base_url):
+    subtitles = response.json()["asset_chunks"]["subtitles"]
+    subtitles = list(subtitles.values())
+    recursion_requested_manifest(base_url, subtitles)
+    # iterated_requested_manifest(sub_temp, subtitles)
 
+def get_base_url_and_asset_name(url):
+    pattern = r'\w*\.m3u8(\?.*)?'
+    match = re.search(pattern, url)
+    base_url = url.split(match.group())[0]
+    return base_url, match.group()
 
 if __name__ == "__main__":
     startTime = datetime.now()
 
-    channel = "hbo2hdchi"
+    # Define Asset variables
+    MANIFEST = 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
+    base_url, asset_name = get_base_url_and_asset_name(MANIFEST)
+
+    # Server request
     URL = 'http://localhost:8001/hlsmanifest/'
     HEADERS = {'Content-type': 'application/json'}
     DATA = {
-        "asset_name": "playlist.m3u8",
-        "base_url": f"https://bitdash-a.akamaihd.net/content/sintel/hls/"}
+        "asset_name": asset_name,
+        "base_url": base_url}
+
+    # HLS Parser request
     response = requests.post(URL, data=json.dumps(DATA), headers=HEADERS)
 
-    print_url(response, channel)
+    # Parse subtitles
+    sub_dict = response.json().get("sub_manifest", None)
+    if response.status_code == 200 and sub_dict:
+        sub_url = sub_dict["subtitles"].get("sub_manifest_0", {})
+        if sub_url:
+            base_url, asset_name = get_base_url_and_asset_name(sub_url)
+            print_url(response, base_url)
+
     endTime = datetime.now()
     deltaTime = endTime - startTime
     print(f"Started at: {startTime} and end at: {endTime}. Total time = {deltaTime}")
