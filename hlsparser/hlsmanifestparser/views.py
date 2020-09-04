@@ -1,3 +1,4 @@
+import re
 from rest_framework import status
 from django.shortcuts import render
 from rest_framework.decorators import api_view
@@ -5,6 +6,11 @@ from rest_framework.response import Response
 from hlsmanifestparser.library.hls_manifest import HLSManifest
 from hlsmanifestparser.serializers import HLSPManifestParserSerializer
 
+def get_base_url_and_asset_name(url):
+    pattern = r'\w*\.m3u8(\?.*)?'
+    match = re.search(pattern, url)
+    base_url = url.split(match.group())[0]
+    return base_url, match.group()
 
 # Create your views here.
 @api_view(http_method_names=['POST'])
@@ -12,11 +18,11 @@ def hls_manifest_parser(request):
     serializer = HLSPManifestParserSerializer(data=request.data)
     if request.method == 'POST':
         if serializer.is_valid():
-            asset_name = serializer.data['asset_name']
-            base_url = serializer.data['base_url']
+            manifest = serializer.data['manifest_url']
+            base_url, file_name = get_base_url_and_asset_name(manifest)
 
             # HLS Object creation
-            hls_object = HLSManifest(f"{base_url}{asset_name}")
+            hls_object = HLSManifest(manifest)
             hls_object.get_manifest_text()
             hls_object.parse_manifest()
 

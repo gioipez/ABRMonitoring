@@ -36,13 +36,13 @@ The solution was build with an software architecture patern Microservice Deploym
 - Body: {"asset_name":"name_of_the_asset.m3u8", "base_url":"http://cdn_fqn:port/path/"}
 
 ```sh
-curl -XPOST -H'Content-type:application/json' 'http://localhost:8001/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}'
+curl -XPOST -H'Content-type:application/json' 'http://localhost:8000/hlsmanifest/' -d '{"manifest_url":"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"}'
 ```
 
 to print pretty formated, add ` | python -m json.tool` at the end of your request, like this:
 
 ```sh
-curl -XPOST -H'Content-type:application/json' 'http://localhost:8001/hlsmanifest/' -d '{"asset_name": "playlist.m3u8","base_url": "https://bitdash-a.akamaihd.net/content/sintel/hls/"}' | python -m json.tool
+curl -XPOST -H'Content-type:application/json' 'http://localhost:8000/hlsmanifest/' -d '{"manifest_url":"https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"}' | python -m json.tool
 ```
 
 <details>

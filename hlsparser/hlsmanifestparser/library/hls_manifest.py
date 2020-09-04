@@ -152,15 +152,11 @@ class HLSManifest():
         """
         video_profiles = []
         if self.manifest_text != "":
-            for items in enumerate(self.manifest_text.split("\n")):
-                info = items[1]
-                if "RESOLUTION" in info and "#EXT-X-I-FRAME" not in info:
-                    video_profiles.append((
-                        info,
-                        self.manifest_text.split("\n")[items[0] + 1]))
-            self.video_info_list = video_profiles
+            self.video_info_list = [
+                    (profile, self.manifest_text.split()[index + 1])\
+                            for index, profile in enumerate(self.manifest_text.split())\
+                            if "RESOLUTION" in profile and "#EXT-X-I-FRAME" not in profile]
             return True
-        return False
 
     def parse_video_to_json(self):
         """
@@ -219,12 +215,9 @@ class HLSManifest():
         """
         audio_list = []
         if self.manifest_text != "":
-            for items in self.manifest_text.split("\n"):
-                if "TYPE=AUDIO" in items:
-                    audio_list.append(items)
-            self.audio_info_list = audio_list
+            self.audio_info_list = [
+                    audio for audio in self.manifest_text.split() if "TYPE=AUDIO" in audio]
             return True
-        return False
 
     def parse_audio_to_json(self):
         """
@@ -279,12 +272,8 @@ class HLSManifest():
         """
         subtitles_list = []
         if self.manifest_text != "":
-            for items in self.manifest_text.split("\n"):
-                if "TYPE=SUBTITLES" in items:
-                    subtitles_list.append(items)
-            self.subtitles_info_list = subtitles_list
+            self.subtitles_info_list = [sub for sub in self.manifest_text.split() if "TYPE=SUBTITLES" in sub]
             return True
-        return False
 
     def parse_subtitles_to_json(self):
         """
@@ -310,3 +299,4 @@ class HLSManifest():
         return False
 
     # Subtitles parse section END ######################
+
