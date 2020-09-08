@@ -1,4 +1,5 @@
 import re
+from random import randint
 from rest_framework import status
 from django.shortcuts import render
 from rest_framework.decorators import api_view
@@ -38,7 +39,7 @@ def hls_manifest_parser(request):
             for profiles in range(len(hls_object.subtitles_info_list)):
                 hls_object.build_submanifest_url(base_url, profiles, c_type="subtitles")
 
-            # Extra video from a submanifest_url
+            # Extract video from a submanifest_url
             if 'sub_manifest_0' in hls_object.sub_manifest_url["video"].keys():
                 hls_object.extract_files_from_submanifest(
                     hls_object.sub_manifest_url["video"]["sub_manifest_0"])
@@ -56,6 +57,6 @@ def hls_manifest_parser(request):
 
             return Response(response, status=status.HTTP_200_OK)
         else:
-            return Response({'data':'error'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'body':'error'}, status=status.HTTP_404_NOT_FOUND)
     else:
         return Response({'ERROR': "Method not allow"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

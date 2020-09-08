@@ -105,7 +105,6 @@ class HLSManifest():
             temp_va = f"{base_url}{submani_url}"
             self.sub_manifest_url[f"{c_type}"][f"sub_manifest_{p_num}"] = temp_va
             return True
-        return False
 
     def extract_files_from_submanifest(self, sub_manifest_url, c_type="video"):
         """
@@ -170,11 +169,12 @@ class HLSManifest():
         """
         vid_num = 0
         video_json = {}
+        pattern = ",([A-Z]*)="
         if len(self.video_info_list) > 0:
             for items in self.video_info_list:
                 video_json[f"video_{vid_num}"] = {}
                 separated_item = list(
-                    filter(None, re.split(",([A-Z]*)=", items[0])))
+                    filter(None, re.split(pattern, items[0])))
                 for video_i in enumerate(separated_item):
                     if video_i[0] % 2 != 0:
                         v_key = separated_item[video_i[0]]
@@ -186,7 +186,6 @@ class HLSManifest():
                 vid_num += 1
             self.asset_json["video"] = video_json
             return True
-        return False
 
     # Video parse section END ######################
 
@@ -231,10 +230,11 @@ class HLSManifest():
         """
         audio_json = {}
         audio_num = 0
+        pattern = ",([A-Z]*)="
         if len(self.audio_info_list) > 0:
             for audio in self.audio_info_list:
                 audio_json[f"audio_{audio_num}"] = {}
-                list_sub = list(filter(None, re.split(",([A-Z]*)=", audio)))
+                list_sub = list(filter(None, re.split(pattern, audio)))
                 for item in enumerate(list_sub):
                     if item[1].isupper() and 'YES' not in item[1]:
                         audio_json[f"audio_{audio_num}"][item[1]] = list_sub[item[0]+1].replace(
@@ -243,7 +243,6 @@ class HLSManifest():
                 audio_num += 1
             self.asset_json["audio"] = audio_json
             return True
-        return False
 
     # Audio parse section END ######################
 
@@ -284,10 +283,11 @@ class HLSManifest():
         """
         subtitles_json = {}
         sub_num = 0
+        pattern = ",([A-Z]*)="
         if len(self.subtitles_info_list) > 0: 
             for subtitles in self.subtitles_info_list:
                 subtitles_json[f"subtitles_{sub_num}"] = {}
-                list_sub = list(filter(None, re.split(",([A-Z]*)=", subtitles)))
+                list_sub = list(filter(None, re.split(pattern, subtitles)))
                 for item in enumerate(list_sub):
                     if item[1].isupper() and 'YES' not in item[1]:
                         subtitles_json[f"subtitles_{sub_num}"][item[1]] = list_sub[item[0]+1].replace(
@@ -296,7 +296,6 @@ class HLSManifest():
                 sub_num += 1
             self.asset_json["subtitles"] = subtitles_json
             return True
-        return False
 
     # Subtitles parse section END ######################
 
