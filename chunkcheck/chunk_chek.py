@@ -5,7 +5,9 @@ Build a class to get Manifest, submanifest, video and
 audio chunks
 """
 import re
+import os
 import yaml
+import platform
 import threading
 from random import randint
 from basic import (
@@ -17,16 +19,23 @@ from basic import (
 # Check random profile or disable and define
 # the profile to check
 # OPTIONS = (V_PROFILE, NUM_CHUN_TOB_CHECK, RANDOM_PROFILES, ASSET_LIST)
-OPTIONS = (0, 10, False, "asset_list.yaml")
+if platform.system() != 'Linux':
+    OPTIONS = (0, 10, False, "asset_list.yaml")
+    # ABR Server IP
+    ABR_MANIFEST_SERVER_IP = "localhost"
+    ABR_MANIFEST_SERVER_PORT = 8001
+else:
+    V_PROFILE = os.getenv("V_PROFILE")
+    NUM_CHUN_TOB_CHECK = os.getenv("NUM_CHUN_TOB_CHECK")
+    RANDOM_PROFILES = os.getenv("RANDOM_PROFILES")
+    ASSET_LIST = os.getenv("ASSET_LIST")
+    OPTIONS = (V_PROFILE, NUM_CHUN_TOB_CHECK, RANDOM_PROFILES, ASSET_LIST)
+    ABR_MANIFEST_SERVER_IP = os.getenv("ABR_MANIFEST_SERVER_IP")
+    ABR_MANIFEST_SERVER_PORT = os.getenv("ABR_MANIFEST_SERVER_PORT")
+
 # Load asset URLs
 URLS = load_streamnames_from_file(OPTIONS[3])
-
-
-# ABR Server IP
-ABR_MANIFEST_SERVER_IP = "localhost"
-ABR_MANIFEST_SERVER_PORT = 8001
 ABR_HLS_PARSER = f"http://{ABR_MANIFEST_SERVER_IP}:{ABR_MANIFEST_SERVER_PORT}/hlsmanifest/"
-
 
 
 class Chunk():
@@ -73,7 +82,7 @@ def channel_check(manifest_url):
             chunks = json_manifest["asset_chunks"]
             for item in range(
                     len(chunks["video"]) - 2,
-                    (len(chunks["video"]) - 2 - OPTIONS[1]), - 1):
+                    (len(chunks["video"]) - 2 - int(OPTIONS[1])), - 1):
                 chunk = Chunk(f'{chunk_base_url[0]}/{chunks["video"][str(item)]}')
                 chunk_headers = chunk.get_http_chunk_info()
                 if chunk_headers:

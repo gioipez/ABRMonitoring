@@ -4,6 +4,7 @@ Mail: giovannt_92@hotmail.com / gioipez92@gmail.com
 Maintain an standar libraries for HTTP communication with
 try, timeouts and headers
 """
+import yaml
 import requests
 from requests.auth import HTTPBasicAuth
 

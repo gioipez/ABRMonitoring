@@ -1,13 +1,28 @@
 version: '3.7'
 
 services:
-  web:
+  parser:
     build: ./hlsparser
-    image: hlsparser:1
+    image: hlsparser:2
     command: gunicorn hlsparser.wsgi:application --bind 0.0.0.0:8000
+    container_name: hls_parser
+    networks:
+      - abrmonitor
     volumes:
       - ./hlsparser/:/usr/src/app/
     ports:
       - 8001:8000
     env_file:
       - ./hlsparser/.env
+  chunk-chek:
+    build: ./chunkcheck
+    image: chunk-check:1
+    command: tail -F /var/log/cron.log 
+    container_name: chunk-check 
+    networks:
+      - abrmonitor
+    env_file:
+      - ./chunkcheck/.env
+
+networks:
+  abrmonitor:
