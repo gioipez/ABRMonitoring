@@ -1,4 +1,14 @@
 # ABRMonitoring
+
+The idea of this repo and community is to bring common ABR issues (HLS, SS, DASH, CMAF) from different persons and try to get solutions through community background and feed this space as much as posible.
+
+Main tools used here are:
++ Python
++ Djando
++ Docker
++ ElasticSearch
++ Kibana
+
 There are a tons of HLS, Smooth streaming and DASH library to parse the information from manifest to JSON data out there, the idea of this is give the engineer a tool to validate an HTTP Stream asset configuration, check the information that manifest is returning, all the submanifest, audio/video/subtitles chunks, codecs, etc. all of these in a microservice contenirized app responding with REST API, with services able to groth completetly loseless.
 
 Then as you have all of that information, in a phase 2 of the project, the idea is to have another microservice that could use that information of the exposed server and use as input for monitoring, create and elasticsearch cluster and upload it there to give you historical information.
