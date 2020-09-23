@@ -57,14 +57,12 @@ if __name__ == "__main__":
     # Define Asset variables
     # MANIFEST = 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
     MANIFEST = input("Enter the URL (ex: https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8):\n")
-    base_url, asset_name = get_base_url_and_asset_name(MANIFEST)
+    #base_url, asset_name = get_base_url_and_asset_name(MANIFEST)
 
     # Server request
-    URL = 'http://localhost:8001/hlsmanifest/'
+    URL = 'http://localhost:8002/hlsmanifest/'
     HEADERS = {'Content-type': 'application/json'}
-    DATA = {
-        "asset_name": asset_name,
-        "base_url": base_url}
+    DATA = {"manifest_url":MANIFEST}
 
     # HLS Parser request
     response = requests.post(URL, data=json.dumps(DATA), headers=HEADERS)

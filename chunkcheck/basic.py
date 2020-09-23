@@ -30,7 +30,7 @@ def put_request(url, **kwargs):
             - timeout
     '''
     if "timeout" not in kwargs.keys():
-        kwargs["timeout"] = 5
+        kwargs["timeout"] = 60.0
     if "headers" not in kwargs.keys():
         kwargs["headers"] = {'content-type': 'application/json'}
     try:
@@ -69,7 +69,7 @@ def post_request(url, **kwargs):
             - timeout
     '''
     if "timeout" not in kwargs:
-        kwargs["timeout"] = 5
+        kwargs["timeout"] = 60.0
     if "headers" not in kwargs:
         kwargs["headers"] = {'content-type': 'application/json'}
     try:
@@ -106,7 +106,7 @@ def get_request(url, **kwargs):
             - timeout
     '''
     if "timeout" not in kwargs.keys():
-        kwargs["timeout"] = 5
+        kwargs["timeout"] = 60.0
     if "headers" not in kwargs.keys():
         kwargs["headers"] = {"Content-Type": "application/json"}
     try:
@@ -143,7 +143,7 @@ def head_request(url, **kwargs):
             - timeout
     '''
     if "timeout" not in kwargs.keys():
-        kwargs["timeout"] = 5
+        kwargs["timeout"] = 60.0
     if "headers" not in kwargs.keys():
         kwargs["headers"] = {"Content-Type": "application/json"}
     try:

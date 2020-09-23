@@ -23,7 +23,7 @@ if platform.system() != 'Linux':
     OPTIONS = (0, 10, False, "asset_list.yaml")
     # ABR Server IP
     ABR_MANIFEST_SERVER_IP = "localhost"
-    ABR_MANIFEST_SERVER_PORT = 8001
+    ABR_MANIFEST_SERVER_PORT = 32171
 else:
     V_PROFILE = os.getenv("V_PROFILE")
     NUM_CHUN_TOB_CHECK = os.getenv("NUM_CHUN_TOB_CHECK")
@@ -100,6 +100,11 @@ def recursion_channel_check(manifest_urls):
         recursion_channel_check(mid2)
 
 if __name__ == '__main__':
+
+   #for manifest_url in URLS:
+   #    print("#"*40)
+   #    print(manifest_url)
+   #    channel_check(manifest_url)
 
     # Build Manifest
     recursion_channel_check(URLS)

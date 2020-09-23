@@ -47,3 +47,5 @@ RUN chown -R app:app $APP_HOME
 
 # change to the app user
 USER app
+EXPOSE 8000
+CMD ["gunicorn", "hlsparser.wsgi:application", "-w", "4", "--max-requests", "1200", "--timeout", "60", "--bind", "0.0.0.0:8000"]

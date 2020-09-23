@@ -4,7 +4,6 @@ services:
   parser:
     build: ./hlsparser
     image: hlsparser:2
-    command: gunicorn hlsparser.wsgi:application --bind 0.0.0.0:8000
     container_name: hls_parser
     networks:
       - abrmonitor
@@ -14,15 +13,15 @@ services:
       - 8001:8000
     env_file:
       - ./hlsparser/.env
-  chunk-chek:
-    build: ./chunkcheck
-    image: chunk-check:1
-    command: tail -F /var/log/cron.log 
-    container_name: chunk-check 
-    networks:
-      - abrmonitor
-    env_file:
-      - ./chunkcheck/.env
+ #chunk-chek:
+ #  build: ./chunkcheck
+ #  image: chunk-check:1
+ #  command: tail -F /var/log/cron.log 
+ #  container_name: chunk-check 
+ #  networks:
+ #    - abrmonitor
+ #  env_file:
+ #    - ./chunkcheck/.env
 
 networks:
   abrmonitor:
