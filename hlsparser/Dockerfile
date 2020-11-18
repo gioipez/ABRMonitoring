@@ -10,6 +10,7 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 COPY ./Requirements.txt .
+RUN echo nameserver 8.8.8.8 >> /etc/resolv.conf
 RUN apk update \
     && apk add gcc musl-dev --no-cache \
     && pip install --upgrade pip \
