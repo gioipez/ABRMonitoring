@@ -1,0 +1,32 @@
+title ABR Monitoring
+
+
+chunk-check-container -> hls-parser: send the manifest URL via post.
+
+hls-parser -> hls-parser: build manifest request
+
+hls-parser -> cdn: GET manifest request
+
+cdn -> hls-parser: send manifest response
+
+note over hls-parser, cdn: This below is done per **video**, **audio**, **subtitle**
+hls-parser -> hls-parser: build sub-manifest request
+
+hls-parser -> cdn: GET sub-manifest request
+
+cdn -> hls-parser: send sub-manifest response
+
+hls-parser -> hls-parser: build response with all asset information
+
+note over hls-parser, chunk-check-container: This response has the information of chunk URL\n codec infomation, number of audios, number of \n subtitles
+
+hls-parser -> chunk-check-container: response with Video, audio, and subtitle info.
+
+note over chunk-check-container, cdn: This below is done per **video**, **audio**, **subtitle**
+
+chunk-check-container -> chunk-check-container: build video, audio and subtitle request
+
+chunk-check-container -> cdn: GET X number of video request
+
+cdn -> chunk-check-container: send X number of video response
+

@@ -17,7 +17,7 @@ Then as you have all of that information, in a phase 2 of the project, the idea 
 
 ### HLS manifest parse
 
-![ABRManifestDiagram](pictures/ABRManifest.svg)
+![ABRManifestDiagram](pictures/ABRManifestv2.svg)
 
 Diagram designed with: [Sequence Diagram](https://sequencediagram.org/)
 
