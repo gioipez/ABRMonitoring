@@ -42,9 +42,10 @@ COPY . $APP_HOME
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
 
-RUN (echo "* * * * * cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py >> /dev/null" >> /var/spool/cron/crontabs/root)
+#RUN (echo "* * * * * cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py >> /dev/null" >> /var/spool/cron/crontabs/root)
 
 # change to the app user
 USER app
 
-CMD cron && tail -F /var/log/cron.log
+#CMD cron && tail -F /var/log/cron.log
+CMD python chunk_check.py

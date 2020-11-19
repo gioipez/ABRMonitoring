@@ -1260,6 +1260,16 @@ It ask you to enter a valid Manifest URL for an asset with subtitles, then it pr
 
 That's all, you have all the information parser from your HLS asset
 
+## Kubernetes instalation
+
+File with name `kubernetes-service.yaml` was added, this could be run in order to execute a fast prefetch of your content, to start using just execute the following command:
+
+```
+kubectl aplly -f kubernetes-service.yaml
+```
+
+The command above will deploy the solution as service in kubernetes, with the given number of replicas, that's amazing!
+
 # Sumary
 
 The idea of this repo is create an HLS, DASH and SMOOTH streaming monitoring tool, that mean that could check HTTP status request of the manifest and chunks, analize how available they are in terms of HTTP answer and push a report in Elasticsearch.
