@@ -60,9 +60,9 @@ if __name__ == "__main__":
     #base_url, asset_name = get_base_url_and_asset_name(MANIFEST)
 
     # Server request
-    URL = 'http://localhost:8002/hlsmanifest/'
+    URL = 'http://172.26.194.211:30000/hlsmanifest/'
     HEADERS = {'Content-type': 'application/json'}
-    DATA = {"manifest_url":MANIFEST}
+    DATA = {"manifest_url": MANIFEST}
 
     # HLS Parser request
     response = requests.post(URL, data=json.dumps(DATA), headers=HEADERS)

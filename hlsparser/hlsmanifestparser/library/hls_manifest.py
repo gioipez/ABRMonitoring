@@ -116,15 +116,15 @@ class HLSManifest():
         """
         submanifest_text = basic.get_request(sub_manifest_url)
         counter = 0
-        if submanifest_text.text != "":
-            for item in submanifest_text.text.split("\n"):
-                if "#EXT" not in item and item != "":
-                    self.asset_files[f"{c_type}"][f"{counter}"] = item.replace("\r", "")
-                    counter += 1
-            return True
-        return False
+        if submanifest_text:
+            if submanifest_text.text != "":
+                for item in submanifest_text.text.split("\n"):
+                    if "#EXT" not in item and item != "":
+                        self.asset_files[f"{c_type}"][f"{counter}"] = item.replace("\r", "")
+                        counter += 1
+                return True
 
-    # Build submanifest URL END ####################
+    # Build sub-manifest URL END ####################
 
     # Video parse section ##########################
 

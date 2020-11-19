@@ -7,11 +7,13 @@ from rest_framework.response import Response
 from hlsmanifestparser.library.hls_manifest import HLSManifest
 from hlsmanifestparser.serializers import HLSPManifestParserSerializer
 
+
 def get_base_url_and_asset_name(url):
     pattern = r'\w*\.m3u8(\?.*)?'
     match = re.search(pattern, url)
     base_url = url.split(match.group())[0]
     return base_url, match.group()
+
 
 # Create your views here.
 @api_view(http_method_names=['POST'])
@@ -57,6 +59,6 @@ def hls_manifest_parser(request):
 
             return Response(response, status=status.HTTP_200_OK)
         else:
-            return Response({'body':'error'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'body': 'error'}, status=status.HTTP_404_NOT_FOUND)
     else:
         return Response({'ERROR': "Method not allow"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

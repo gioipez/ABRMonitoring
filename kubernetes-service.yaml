@@ -2,12 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kubernetes.io/change-cause: "DNS ADDED"
+    kubernetes.io/change-cause: "2 workers"
   name: hlsk8s-deployment
   labels:
     app: hlsk8s 
 spec:
-  replicas: 8
+  replicas: 3
   selector:
     matchLabels:
       app: hlsk8s
@@ -23,10 +23,10 @@ spec:
        nameservers:
         - 8.8.8.8
       containers:
-        - name: container1
+        - name: hlsk8s
           imagePullPolicy: Always
           image: giopez/hlsparser:7
-          command: ['sh', "-c", "gunicorn hlsparser.wsgi:application -w 4 --max-requests 1200 --timeout 60 --bind 0.0.0.0:8000"]
+          command: ['sh', "-c", "gunicorn hlsparser.wsgi:application -w 14 --max-requests 1200 --timeout 10 --bind 0.0.0.0:8000"]
           env:
             - name: DEBUG
               value: "0"
@@ -36,37 +36,10 @@ spec:
               value: "* hls_parser"
           ports:
           - containerPort: 8000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations:
-    kubernetes.io/change-cause: "Version change to 1.1"
-  name: chunk-check-deployment
-  labels:
-    app: chunk-check 
-spec:
-  replicas: 5
-  selector:
-    matchLabels:
-      app: chunk-check
-  template:
-    metadata:
-      labels:
-        app: chunk-check
-    spec:
-      hostname: chunk-check
-      subdomain: default-subdomain
-      dnsPolicy: "None"
-      dnsConfig:
-       nameservers:
-        - 8.8.8.8
-      restartPolicy: Always
-      containers:
-        - name: container1
+        - name: chunkcheck
           # imagePullPolicy: Always
-          image: giopez/chunkcheck:1.1
-          command: ['/usr/local/bin/python3.7', '/home/app/web/chunk_chek.py']
+          image: giopez/chunkcheck:0.0.1-6
+          command: ['crond', '-l', '2', '-f']
           env:
             - name: V_PROFILE
               value: "5"
@@ -77,11 +50,11 @@ spec:
             - name: ASSET_LIST
               value: "./asset_list.yaml"
             - name: ABR_MANIFEST_SERVER_IP
-              value: "172.26.194.211"
+              value: "localhost"
             - name: ABR_MANIFEST_SERVER_PORT
-              value: "30000"
+              value: "8000"
           ports:
-          - containerPort: 8000
+          - containerPort: 8001
 ---
 apiVersion: v1
 kind: Service
@@ -100,20 +73,3 @@ spec:
       port: 8080
       targetPort: 8000
       nodePort: 30000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: chunk-check-service
-  labels:
-    app: chunk-check
-spec:
-  #externalIPs:
-  #- 172.26.194.211
-  type: NodePort
-  selector:
-    app: chunk-check
-  ports:
-    - protocol: TCP
-      port: 8081
-      targetPort: 8000
