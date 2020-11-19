@@ -1,11 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: gio-development
   annotations:
-    kubernetes.io/change-cause: "2 workers"
+    kubernetes.io/change-cause: "Changed image to one with LL URLs"
   name: hlsk8s-deployment
   labels:
-    app: hlsk8s 
+    app: hlsk8s
 spec:
   replicas: 3
   selector:
@@ -38,7 +39,7 @@ spec:
           - containerPort: 8000
         - name: chunkcheck
           # imagePullPolicy: Always
-          image: giopez/chunkcheck:0.0.1-6
+          image: giopez/chunkcheck:0.0.1-7
           command: ['crond', '-l', '2', '-f']
           env:
             - name: V_PROFILE
