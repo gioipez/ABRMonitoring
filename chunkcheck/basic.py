@@ -13,9 +13,7 @@ def load_streamnames_from_file(path):
     '''
     Load YAML files to python
     '''
-    streamnames_list = []
-    streamnames_list = yaml.load(open(path), Loader=yaml.FullLoader)
-    return streamnames_list
+    return yaml.load(open(path), Loader=yaml.FullLoader)
 
 def put_request(url, **kwargs):
     '''

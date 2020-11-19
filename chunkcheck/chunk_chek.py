@@ -23,8 +23,8 @@ from basic import (
 if platform.system() != 'Linux':
     OPTIONS = (5, 10, False, "asset_list.yaml")
     # ABR Server IP
-    ABR_MANIFEST_SERVER_IP = "172.26.194.211"
-    ABR_MANIFEST_SERVER_PORT = 30000
+    ABR_MANIFEST_SERVER_IP = "localhost"
+    ABR_MANIFEST_SERVER_PORT = 8000
 else:
     V_PROFILE = int(os.getenv("V_PROFILE"))
     NUM_CHUNKS_TOB_CHECK = int(os.getenv("NUM_CHUNKS_TOB_CHECK"))
@@ -91,13 +91,14 @@ def channel_check(manifest_url):
             chunk_base_url = list(
                 filter(None, re.split(r"/\w*.m3u8(.*?)", selected_profile)))
             chunks = json_manifest["asset_chunks"]
-            for item in range(
-                    len(chunks["video"]) - 2,
-                    (len(chunks["video"]) - 2 - int(OPTIONS[1])), - 1):
-                chunk = Chunk(f'{chunk_base_url[0]}/{chunks["video"][str(item)]}')
-                chunk.get_http_chunk_info()
-                # if chunk_headers:
-                #     print(chunk_headers.headers)
+            if len(chunks["video"]) > OPTIONS[1]:
+                for item in range(
+                        len(chunks["video"]) - 2,
+                        (len(chunks["video"]) - 2 - int(OPTIONS[1])), - 1):
+                    chunk = Chunk(f'{chunk_base_url[0]}/{chunks["video"][str(item)]}')
+                    chunk.get_http_chunk_info()
+                    # if chunk_headers:
+                    #     print(chunk_headers.headers)
 
 
 def recursion_channel_check(manifest_urls):
