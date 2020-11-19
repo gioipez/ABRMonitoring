@@ -43,7 +43,8 @@ COPY . $APP_HOME
 RUN chown -R app:app $APP_HOME
 
 RUN (echo "* * * * * cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py > /var/log/cron" >> /var/spool/cron/crontabs/root)
-RUN (echo "* * * * * (sleep 30; cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py ) > /var/log/cron" >> /var/spool/cron/crontabs/root)
+RUN (echo "* * * * * (sleep 20; cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py ) > /var/log/cron" >> /var/spool/cron/crontabs/root)
+RUN (echo "* * * * * (sleep 40; cd /home/app/web; /usr/local/bin/python3.7 chunk_chek.py ) > /var/log/cron" >> /var/spool/cron/crontabs/root)
 
 # change to the app user
 #USER app
